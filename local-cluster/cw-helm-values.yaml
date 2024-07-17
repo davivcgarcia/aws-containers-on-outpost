@@ -1,0 +1,24 @@
+clusterName: lab-outpost-local
+
+region: us-west-2
+
+admissionWebhooks:
+  certManager:
+    enabled: false
+
+containerLogs:
+  enabled: true
+  fluentBit:
+    image:
+      repositoryDomainMap:
+        public: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/aws-observability
+
+manager:
+  image:
+    repositoryDomainMap:
+      public: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/cloudwatch-agent
+
+agent:
+  image:
+    repositoryDomainMap:
+      public: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/cloudwatch-agent

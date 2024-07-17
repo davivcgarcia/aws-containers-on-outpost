@@ -1,0 +1,42 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: lab-outpost-local
+  region: us-west-2
+  version: "1.28"
+
+privateCluster:
+  enabled: true
+  additionalEndpointServices:
+  - "autoscaling"
+  - "elasticloadbalancing"
+  - "monitoring"
+  - "xray"
+
+cloudWatch:
+  clusterLogging:
+    enableTypes:
+    - api
+    - authenticator
+    - controllerManager
+    - scheduler
+    logRetentionInDays: 7
+
+outpost:
+  controlPlaneOutpostARN: arn:aws:outposts:us-west-2:726336412275:outpost/op-0663daef268ef9183
+  controlPlaneInstanceType: m5.xlarge
+
+nodeGroups:
+  - name: m5-ng-1
+    privateNetworking: true
+    instanceType: m5.xlarge
+    desiredCapacity: 2
+    iam:
+      withAddonPolicies:
+        ebs: true
+        awsLoadBalancerController: true
+        autoScaler: true
+        cloudWatch: true
+        xRay: true

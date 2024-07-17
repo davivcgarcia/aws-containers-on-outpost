@@ -1,0 +1,8 @@
+clusterName: lab-outpost-local
+
+image:
+  repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/eks/aws-load-balancer-controller
+
+enableShield: false
+enableWaf: false
+enableWafv2: false

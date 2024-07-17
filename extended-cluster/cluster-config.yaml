@@ -1,0 +1,59 @@
+---
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: lab-outpost-extended
+  region: us-west-2
+  version: "1.28"
+
+vpc:
+  clusterEndpoints:
+    publicAccess: true
+    privateAccess: true
+
+accessConfig:
+  authenticationMode: API_AND_CONFIG_MAP
+  bootstrapClusterCreatorAdminPermissions: true
+
+cloudWatch:
+  clusterLogging:
+    enableTypes:
+    - api
+    - authenticator
+    - controllerManager
+    - scheduler
+    logRetentionInDays: 7
+
+iam:
+  withOIDC: true
+
+addons:
+  - name: vpc-cni
+    version: latest
+    attachPolicyARNs:
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy    
+  - name: kube-proxy
+    version: latest
+  - name: coredns
+    version: latest
+  - name: aws-ebs-csi-driver
+    version: latest
+    attachPolicyARNs:
+    - arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy
+  - name: snapshot-controller
+    version: latest
+  - name: amazon-cloudwatch-observability
+    version: latest
+    attachPolicyARNs:
+    - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+    - arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy
+
+nodeGroups:
+  - name: g4dn-ng-1
+    privateNetworking: true
+    outpostARN: arn:aws:outposts:us-west-2:726336412275:outpost/op-0663daef268ef9183
+    instanceType: g4dn.12xlarge
+    amiFamily: Ubuntu2004
+    desiredCapacity: 1
+

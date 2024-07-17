@@ -1,0 +1,57 @@
+---
+image:
+  repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/ebs-csi-driver/aws-ebs-csi-driver
+
+sidecars:
+  provisioner:
+    image:
+      repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/eks-distro/kubernetes-csi/external-provisioner
+  attacher:
+    image:
+      repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/eks-distro/kubernetes-csi/external-attacher
+  snapshotter:
+    image:
+      repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/eks-distro/kubernetes-csi/external-snapshotter/csi-snapshotter
+  livenessProbe:
+    image:
+      repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/eks-distro/kubernetes-csi/livenessprobe
+  resizer:
+    image:
+      repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/eks-distro/kubernetes-csi/external-resizer
+  nodeDriverRegistrar:
+    image:
+      repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/eks-distro/kubernetes-csi/node-driver-registrar
+  volumemodifier:
+    image:
+      repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/ecr-public/ebs-csi-driver/volume-modifier-for-k8s
+
+node:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/control-plane
+                operator: DoesNotExist
+              - key: eks.amazonaws.com/compute-type
+                operator: NotIn
+                values:
+                  - fargate
+              - key: node.kubernetes.io/instance-type
+                operator: NotIn
+                values:
+                  - a1.medium
+                  - a1.large
+                  - a1.xlarge
+                  - a1.2xlarge
+                  - a1.4xlarge
+
+storageClasses:
+  - name: ebs-gp2
+    annotations:
+      storageclass.kubernetes.io/is-default-class: "true"
+    volumeBindingMode: WaitForFirstConsumer
+    reclaimPolicy: Retain
+    parameters:
+      encrypted: "false"
+      type: gp2
