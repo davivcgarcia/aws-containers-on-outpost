@@ -217,6 +217,13 @@ kubectl -n amazon-cloudwatch patch daemonset fluent-bit --type=json -p='[
 ]'
 ```
 
+3.3.5. Edit CWAgent image tag and FluentBit ConfigMap (https://t.corp.amazon.com/V1387280854/communication).
+
+```bash
+kubectl edit cm -n amazon-cloudwatch  fluent-bit-config
+kubectl edit amazoncloudwatchagents.cloudwatch.aws.amazon.com cloudwatch-agent -n amazon-cloudwatch -o yaml
+```
+
 3.4. Deploy Kubernetes Metrics Server
 
 ```bash
