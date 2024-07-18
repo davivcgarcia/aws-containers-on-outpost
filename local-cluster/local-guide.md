@@ -21,6 +21,11 @@ aws ecr create-pull-through-cache-rule \
      --ecr-repository-prefix ecr-public \
      --upstream-registry-url public.ecr.aws \
      --region us-west-2
+
+aws ecr create-pull-through-cache-rule \
+     --ecr-repository-prefix k8s \
+     --upstream-registry-url registry.k8s.io \
+     --region us-west-2
 ```
 
 3. Install the EKS Add-ons using the Helm Charts (self-managed).
@@ -226,8 +231,22 @@ kubectl edit amazoncloudwatchagents.cloudwatch.aws.amazon.com cloudwatch-agent -
 
 3.4. Deploy Kubernetes Metrics Server
 
+3.4.1. Create the EBS Helm Chart value file (required due Outpost specific configs)
+
+```bash
+cat<<EOF > ms-helm-values.yaml
+image:
+  repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/k8s/metrics-server/metrics-server
+
+args:
+  - --kubelet-insecure-tls
+EOF
+```
+
+3.4.2. Install the Helm Chart using the value file
+
 ```bash
 helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
 helm repo update
-helm upgrade --install metrics-server --namespace kube-system metrics-server/metrics-server
+helm upgrade --install metrics-server --namespace kube-system metrics-server/metrics-server --values ms-helm-values.yaml
 ```
