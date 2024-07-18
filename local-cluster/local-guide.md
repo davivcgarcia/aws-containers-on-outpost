@@ -14,7 +14,7 @@ eksctl create nodegroup -f cluster-config.yaml
 
 4. Modify EKS Cluster SG to allow connection from Default VPC CIDR on HTTPS
 
-5. Create the ECR Pull-through cache for the Public ECR repositories. Be aware that you need to pull these images using Docker, before these getting available for consumption from EKS Local Cluster (not sure why yet).
+5. Create the ECR Pull-through cache for the Public ECR repositories. Be aware that you need to pull these images using Docker, before the cached-images get ready for consumption from EKS Local Cluster (not sure why yet).
 
 ```bash
 aws ecr create-pull-through-cache-rule \
