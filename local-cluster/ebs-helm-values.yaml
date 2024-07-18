@@ -31,8 +31,6 @@ node:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
           - matchExpressions:
-              - key: node-role.kubernetes.io/control-plane
-                operator: DoesNotExist
               - key: eks.amazonaws.com/compute-type
                 operator: NotIn
                 values:
@@ -45,6 +43,8 @@ node:
                   - a1.xlarge
                   - a1.2xlarge
                   - a1.4xlarge
+              - key: node-role.eks-local.amazonaws.com/control-plane
+                operator: DoesNotExist
 
 storageClasses:
   - name: ebs-gp2

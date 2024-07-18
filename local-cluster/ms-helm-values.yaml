@@ -1,0 +1,5 @@
+image:
+  repository: 779385874783.dkr.ecr.us-west-2.amazonaws.com/k8s/metrics-server/metrics-server
+
+args:
+  - --kubelet-insecure-tls
