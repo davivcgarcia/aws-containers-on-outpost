@@ -20,6 +20,8 @@ helm upgrade --install --create-namespace -n nvidia-operator nvidia-gpu-operator
 
 4. Deploy the Nvidia gpu-enabled sample apps
 
+4.1.1. Option 1 - Jupyter Notebook
+
 ```bash
 cat <<EOF | kubectl apply -f -
 ---
@@ -73,11 +75,55 @@ spec:
 EOF
 ```
 
-5. Check if the sample apps are running (or completed)
+4.1.2. Check if the sample apps are running (or completed)
 
 ```bash
 kubectl get pods,svc
 kubectl logs cuda-vectoradd
 kubectl logs tf-notebook
 kubectl port-foward 
+```
+
+4.2.1.  Option 2 - Open-WebUI with Ollama (requires additional add-ons such as AWS LB Controller and EBS CSI Driver)
+
+```bash
+cat <<EOF > open-webui-values.yaml
+ollama:
+  enabled: true
+  fullnameOverride: "open-webui-ollama"
+  ollama:
+    gpu:
+      enabled: true
+      type: 'nvidia'
+      number: 1
+    models:
+      - llama3
+  runtimeClassName: nvidia
+  persistentVolume:
+    enabled: true
+
+ingress:
+  enabled: true
+  class: alb
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/subnets: <replace with the public subnets associated with outpost>
+    alb.ingress.kubernetes.io/target-type: ip
+EOF
+
+helm repo add open-webui https://helm.openwebui.com/
+help repo update
+helm upgrade --install open-webui open-webui/open-webui -n open-webui-ollama --create-namespace --values open-webui-values.yaml
+```
+
+4.2.2. Check if the sample apps are running (or completed)
+
+```bash
+kubectl get ns
+kubectl -n open-webui-ollama get pods 
+kubectl -n open-webui-ollama get pvc
+kubectl -n open-webui-ollama get deployments.apps 
+kubectl -n open-webui-ollama get statefulsets.apps 
+kubectl -n open-webui-ollama get ingress
+kubectl -n open-webui-ollama logs -l app.kubernetes.io/component=open-webui-ollama --tail=-1
 ```
